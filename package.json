@@ -1,0 +1,13 @@
+{
+  "name": "ya-tournament-anticheat-server",
+  "version": "1.0.0",
+  "description": "لوحة استقبال تقارير أداة YA Security Scanner من لاعبي البطولة",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
