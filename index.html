@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>YA Tournament — لوحة مراقبة البطولة</title>
+<style>
+  :root {
+    --bg: #0b0710; --panel: #160f24; --panel-light: #1e1530;
+    --accent: #8b5cf6; --accent-deep: #6d28d9; --accent-glow: #a78bfa;
+    --good: #3ddc84; --warn: #ffc24c; --danger: #ff4d6d;
+    --text: #f3eefc; --text-dim: #a99bc7; --border: #2e2145;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: linear-gradient(135deg, #0b0710 0%, #140b22 55%, #1a0e2e 100%);
+    color: var(--text); padding: 28px;
+  }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 22px; }
+  .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: start; }
+  .card {
+    background: linear-gradient(180deg, var(--panel-light), var(--panel));
+    border: 1px solid var(--border); border-radius: 14px; padding: 16px;
+  }
+  .card h2 { font-size: 15px; margin: 0 0 12px; color: var(--accent-glow); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border); }
+  th { color: var(--text-dim); font-weight: 600; font-size: 11px; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .badge.ok { background: rgba(61,220,132,0.15); color: var(--good); }
+  .badge.alert { background: rgba(255,77,109,0.18); color: var(--danger); }
+  .score { font-weight: 700; }
+  .score.high { color: var(--danger); }
+  .score.mid { color: var(--warn); }
+  .score.low { color: var(--good); }
+  .empty { color: var(--text-dim); font-size: 13px; padding: 20px 0; text-align: center; }
+  .alert-row { animation: pulse 2s ease-in-out infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
+  .ltr { direction: ltr; text-align: left; font-family: Consolas, monospace; font-size: 12px; }
+  .footer { margin-top: 24px; color: var(--text-dim); font-size: 11px; text-align: center; }
+</style>
+</head>
+<body>
+  <h1>🛡 YA Tournament — لوحة مراقبة مباشرة</h1>
+  <div class="sub">تُحدَّث تلقائيًا كل 3 ثوانٍ • تعرض فقط بيانات الفحص المُرسلة من عملاء اللاعبين المتصلين طواعية</div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>👥 اللاعبون المتصلون</h2>
+      <table id="playersTable">
+        <thead>
+          <tr><th>اللاعب</th><th>الجهاز</th><th>الحالة</th><th>أعلى درجة اشتباه</th><th>آخر ظهور</th></tr>
+        </thead>
+        <tbody id="playersBody"><tr><td colspan="5" class="empty">لا يوجد لاعبون متصلون بعد</td></tr></tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <h2>⚠ سجل التنبيهات</h2>
+      <table id="alertsTable">
+        <thead>
+          <tr><th>اللاعب</th><th>العملية</th><th>الدرجة</th><th>الوقت</th></tr>
+        </thead>
+        <tbody id="alertsBody"><tr><td colspan="4" class="empty">لا يوجد تنبيهات بعد</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="footer">© 2026 YA Community — Software Team</div>
+
+<script>
+function scoreClass(s) {
+  if (s >= 70) return 'high';
+  if (s >= 40) return 'mid';
+  return 'low';
+}
+
+function timeAgo(iso) {
+  const diff = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (diff < 60) return Math.floor(diff) + ' ثانية';
+  if (diff < 3600) return Math.floor(diff / 60) + ' دقيقة';
+  return Math.floor(diff / 3600) + ' ساعة';
+}
+
+async function refresh() {
+  try {
+    const res = await fetch('/api/dashboard');
+    const data = await res.json();
+
+    const playersBody = document.getElementById('playersBody');
+    if (!data.players.length) {
+      playersBody.innerHTML = '<tr><td colspan="5" class="empty">لا يوجد لاعبون متصلون بعد</td></tr>';
+    } else {
+      playersBody.innerHTML = data.players.map(p => `
+        <tr class="${p.status === 'alert' ? 'alert-row' : ''}">
+          <td>${escapeHtml(p.playerName)}</td>
+          <td class="ltr">${escapeHtml(p.machineName || '')}</td>
+          <td><span class="badge ${p.status === 'alert' ? 'alert' : 'ok'}">${p.status === 'alert' ? 'اشتباه' : 'طبيعي'}</span></td>
+          <td class="score ${scoreClass(p.highestScore || 0)}">${p.highestScore || 0}/100</td>
+          <td>${timeAgo(p.lastSeenUtc)}</td>
+        </tr>
+      `).join('');
+    }
+
+    const alertsBody = document.getElementById('alertsBody');
+    if (!data.alerts.length) {
+      alertsBody.innerHTML = '<tr><td colspan="4" class="empty">لا يوجد تنبيهات بعد</td></tr>';
+    } else {
+      alertsBody.innerHTML = data.alerts.map(a => `
+        <tr>
+          <td>${escapeHtml(a.playerName)}</td>
+          <td class="ltr">${escapeHtml(a.processName)} (PID ${a.pid})</td>
+          <td class="score ${scoreClass(a.score)}">${a.score}/100</td>
+          <td>${timeAgo(a.timestampUtc)}</td>
+        </tr>
+      `).join('');
+    }
+  } catch (e) {
+    console.error('dashboard refresh failed', e);
+  }
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+refresh();
+setInterval(refresh, 3000);
+</script>
+</body>
+</html>
