@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>YA Tournament — لوحة إدارة البطولة</title>
+<title>YA Tournament — لوحة مراقبة البطولة</title>
 <style>
   :root {
     --bg: #0b0710; --panel: #160f24; --panel-light: #1e1530;
@@ -14,200 +14,67 @@
   body {
     margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif;
     background: linear-gradient(135deg, #0b0710 0%, #140b22 55%, #1a0e2e 100%);
-    color: var(--text); min-height: 100vh;
+    color: var(--text); padding: 28px;
   }
-  .wrap { padding: 28px; max-width: 1400px; margin: 0 auto; }
   h1 { font-size: 22px; margin: 0 0 4px; }
   .sub { color: var(--text-dim); font-size: 13px; margin-bottom: 22px; }
+  .grid { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: start; }
   .card {
     background: linear-gradient(180deg, var(--panel-light), var(--panel));
-    border: 1px solid var(--border); border-radius: 14px; padding: 18px;
+    border: 1px solid var(--border); border-radius: 14px; padding: 16px;
   }
-  .card h2 { font-size: 15px; margin: 0 0 14px; color: var(--accent-glow); }
+  .card h2 { font-size: 15px; margin: 0 0 12px; color: var(--accent-glow); }
   table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th, td { padding: 9px 10px; text-align: right; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th, td { padding: 8px 10px; text-align: right; border-bottom: 1px solid var(--border); }
   th { color: var(--text-dim); font-weight: 600; font-size: 11px; }
-  .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; display: inline-block; }
+  .badge { padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
   .badge.ok { background: rgba(61,220,132,0.15); color: var(--good); }
   .badge.alert { background: rgba(255,77,109,0.18); color: var(--danger); }
-  .badge.offline { background: rgba(169,155,199,0.15); color: var(--text-dim); }
   .score { font-weight: 700; }
   .score.high { color: var(--danger); }
   .score.mid { color: var(--warn); }
   .score.low { color: var(--good); }
   .empty { color: var(--text-dim); font-size: 13px; padding: 20px 0; text-align: center; }
   .alert-row { animation: pulse 2s ease-in-out infinite; }
-  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.7;} }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:.6;} }
   .ltr { direction: ltr; text-align: left; font-family: Consolas, monospace; font-size: 12px; }
   .footer { margin-top: 24px; color: var(--text-dim); font-size: 11px; text-align: center; }
-  .reasons { color: var(--text-dim); font-size: 11px; line-height: 1.6; }
-  input, button {
-    font-family: inherit; font-size: 13px; border-radius: 8px; border: 1px solid var(--border);
-    background: #1a0f2e; color: var(--text); padding: 9px 12px;
-  }
-  button {
-    background: linear-gradient(135deg,#a855f7,#6d28d9); border: none; cursor: pointer;
-    font-weight: 600; color: white;
-  }
-  button.secondary { background: #1a0f2e; border: 1px solid var(--border); color: var(--text); }
-  button.danger { background: #3d1a2a; border: 1px solid var(--danger); color: var(--danger); }
-  button:hover { filter: brightness(1.15); }
-  .row { display: flex; gap: 10px; align-items: center; }
-  .grid2 { display: grid; grid-template-columns: 1fr 1.4fr; gap: 18px; margin-bottom: 18px; }
-  .grid-dash { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; align-items: start; }
-  .tabs { display: flex; gap: 8px; margin-bottom: 18px; }
-  .tab-btn {
-    background: #1a0f2e; border: 1px solid var(--border); color: var(--text-dim);
-    padding: 9px 18px; border-radius: 10px; cursor: pointer; font-weight: 600;
-  }
-  .tab-btn.active { background: linear-gradient(135deg,#a855f7,#6d28d9); color: white; border: none; }
-  .hidden { display: none !important; }
-  .token-cell { direction: ltr; text-align: left; font-family: Consolas, monospace; font-size: 11px; color: var(--accent-glow); }
-  .login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-  .login-box { width: 340px; text-align: center; }
-  .login-box h1 { margin-bottom: 6px; }
-  .login-box .sub { margin-bottom: 24px; }
-  .login-box input { width: 100%; margin-bottom: 12px; }
-  .login-box button { width: 100%; padding: 11px; }
-  .error { color: var(--danger); font-size: 12px; margin-top: 10px; min-height: 16px; }
-  .new-team-result { background: #14251b; border: 1px solid var(--good); border-radius: 8px; padding: 12px; margin-top: 12px; font-size: 12px; }
-  .copy-hint { color: var(--text-dim); font-size: 10px; }
-  .stat-row { display: flex; gap: 12px; margin-bottom: 18px; }
-  .stat { flex: 1; background: linear-gradient(180deg, var(--panel-light), var(--panel)); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; }
-  .stat .label { color: var(--text-dim); font-size: 10px; }
-  .stat .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
 </style>
 </head>
 <body>
+  <h1>🛡 YA Tournament — لوحة مراقبة مباشرة</h1>
+  <div class="sub">تُحدَّث تلقائيًا كل 3 ثوانٍ • تعرض فقط بيانات الفحص المُرسلة من عملاء اللاعبين المتصلين طواعية</div>
 
-<div id="loginScreen" class="login-screen">
-  <div class="login-box card">
-    <h1>🛡 YA Tournament</h1>
-    <div class="sub">تسجيل دخول المنظّم</div>
-    <input id="loginPassword" type="password" placeholder="كلمة مرور المنظّم" onkeydown="if(event.key==='Enter') login()">
-    <button onclick="login()">دخول</button>
-    <div id="loginError" class="error"></div>
-  </div>
-</div>
-
-<div id="mainApp" class="wrap hidden">
-  <div class="row" style="justify-content: space-between; margin-bottom: 4px;">
-    <div>
-      <h1>🛡 YA Tournament — لوحة إدارة البطولة</h1>
-      <div class="sub">تُحدَّث تلقائيًا كل 3 ثوانٍ • تعرض فقط بيانات الفحص المُرسلة من عملاء الفرق المسجّلة برمز صالح</div>
-    </div>
-    <button class="secondary" onclick="logout()">تسجيل خروج</button>
-  </div>
-
-  <div class="tabs">
-    <button class="tab-btn active" id="tabDashBtn" onclick="showTab('dash')">📡 المراقبة المباشرة</button>
-    <button class="tab-btn" id="tabTeamsBtn" onclick="showTab('teams')">👥 إدارة الفرق</button>
-  </div>
-
-  <!-- ===== تبويب: المراقبة المباشرة ===== -->
-  <div id="tabDash">
-    <div class="stat-row">
-      <div class="stat"><div class="label">فرق مسجّلة</div><div class="value" id="statTeams">0</div></div>
-      <div class="stat"><div class="label">أجهزة متصلة الآن</div><div class="value" id="statOnline" style="color: var(--good)">0</div></div>
-      <div class="stat"><div class="label">اشتباهات نشطة</div><div class="value" id="statAlert" style="color: var(--danger)">0</div></div>
-      <div class="stat"><div class="label">إجمالي التنبيهات</div><div class="value" id="statAlertsTotal">0</div></div>
+  <div class="grid">
+    <div class="card">
+      <h2>👥 اللاعبون المتصلون</h2>
+      <table id="playersTable">
+        <thead>
+          <tr><th>اللاعب</th><th>الجهاز</th><th>الحالة</th><th>أعلى درجة اشتباه</th><th>آخر ظهور</th></tr>
+        </thead>
+        <tbody id="playersBody"><tr><td colspan="5" class="empty">لا يوجد لاعبون متصلون بعد</td></tr></tbody>
+      </table>
     </div>
 
-    <div class="grid-dash">
-      <div class="card">
-        <h2>💻 الأجهزة المتصلة (حسب الفريق)</h2>
-        <table>
-          <thead><tr><th>الفريق</th><th>الجهاز/اللاعب</th><th>اسم الجهاز</th><th>الحالة</th><th>أعلى درجة</th><th>آخر ظهور</th></tr></thead>
-          <tbody id="devicesBody"><tr><td colspan="6" class="empty">لا يوجد أجهزة متصلة بعد</td></tr></tbody>
-        </table>
-      </div>
-
-      <div class="card">
-        <h2>⚠ سجل التنبيهات التفصيلي</h2>
-        <table>
-          <thead><tr><th>الفريق</th><th>الجهاز</th><th>العملية</th><th>الدرجة</th><th>الأسباب</th><th>الوقت</th></tr></thead>
-          <tbody id="alertsBody"><tr><td colspan="6" class="empty">لا يوجد تنبيهات بعد</td></tr></tbody>
-        </table>
-      </div>
-    </div>
-  </div>
-
-  <!-- ===== تبويب: إدارة الفرق ===== -->
-  <div id="tabTeams" class="hidden">
-    <div class="grid2">
-      <div class="card">
-        <h2>➕ إضافة فريق جديد</h2>
-        <div class="row">
-          <input id="newTeamName" type="text" placeholder="اسم الفريق" style="flex:1">
-          <button onclick="createTeam()">إنشاء</button>
-        </div>
-        <div id="newTeamResult"></div>
-      </div>
-
-      <div class="card">
-        <h2>📋 الفرق المسجّلة</h2>
-        <table>
-          <thead><tr><th>اسم الفريق</th><th>الرمز (Token)</th><th>تاريخ الإنشاء</th><th></th></tr></thead>
-          <tbody id="teamsBody"><tr><td colspan="4" class="empty">لا يوجد فرق بعد</td></tr></tbody>
-        </table>
-      </div>
+    <div class="card">
+      <h2>⚠ سجل التنبيهات</h2>
+      <table id="alertsTable">
+        <thead>
+          <tr><th>اللاعب</th><th>العملية</th><th>الدرجة</th><th>الوقت</th></tr>
+        </thead>
+        <tbody id="alertsBody"><tr><td colspan="4" class="empty">لا يوجد تنبيهات بعد</td></tr></tbody>
+      </table>
     </div>
   </div>
 
   <div class="footer">© 2026 YA Community — Software Team</div>
-</div>
 
 <script>
-let sessionToken = localStorage.getItem('ya_admin_session') || null;
-let refreshTimer = null;
-
-function authHeaders() {
-  return { 'Authorization': 'Bearer ' + sessionToken, 'Content-Type': 'application/json' };
+function scoreClass(s) {
+  if (s >= 70) return 'high';
+  if (s >= 40) return 'mid';
+  return 'low';
 }
-
-async function login() {
-  const password = document.getElementById('loginPassword').value;
-  const errEl = document.getElementById('loginError');
-  errEl.textContent = '';
-  try {
-    const res = await fetch('/api/admin/login', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ password })
-    });
-    const data = await res.json();
-    if (!res.ok) { errEl.textContent = data.error || 'فشل تسجيل الدخول'; return; }
-    sessionToken = data.sessionToken;
-    localStorage.setItem('ya_admin_session', sessionToken);
-    enterApp();
-  } catch (e) {
-    errEl.textContent = 'تعذّر الاتصال بالسيرفر';
-  }
-}
-
-function logout() {
-  localStorage.removeItem('ya_admin_session');
-  sessionToken = null;
-  if (refreshTimer) clearInterval(refreshTimer);
-  document.getElementById('mainApp').classList.add('hidden');
-  document.getElementById('loginScreen').classList.remove('hidden');
-}
-
-function enterApp() {
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('mainApp').classList.remove('hidden');
-  refreshDashboard();
-  refreshTeams();
-  refreshTimer = setInterval(() => { refreshDashboard(); refreshTeams(); }, 3000);
-}
-
-function showTab(tab) {
-  document.getElementById('tabDash').classList.toggle('hidden', tab !== 'dash');
-  document.getElementById('tabTeams').classList.toggle('hidden', tab !== 'teams');
-  document.getElementById('tabDashBtn').classList.toggle('active', tab === 'dash');
-  document.getElementById('tabTeamsBtn').classList.toggle('active', tab === 'teams');
-}
-
-function scoreClass(s) { if (s >= 70) return 'high'; if (s >= 40) return 'mid'; return 'low'; }
 
 function timeAgo(iso) {
   const diff = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
@@ -216,90 +83,50 @@ function timeAgo(iso) {
   return Math.floor(diff / 3600) + ' ساعة';
 }
 
+async function refresh() {
+  try {
+    const res = await fetch('/api/dashboard');
+    const data = await res.json();
+
+    const playersBody = document.getElementById('playersBody');
+    if (!data.players.length) {
+      playersBody.innerHTML = '<tr><td colspan="5" class="empty">لا يوجد لاعبون متصلون بعد</td></tr>';
+    } else {
+      playersBody.innerHTML = data.players.map(p => `
+        <tr class="${p.status === 'alert' ? 'alert-row' : ''}">
+          <td>${escapeHtml(p.playerName)}</td>
+          <td class="ltr">${escapeHtml(p.machineName || '')}</td>
+          <td><span class="badge ${p.status === 'alert' ? 'alert' : 'ok'}">${p.status === 'alert' ? 'اشتباه' : 'طبيعي'}</span></td>
+          <td class="score ${scoreClass(p.highestScore || 0)}">${p.highestScore || 0}/100</td>
+          <td>${timeAgo(p.lastSeenUtc)}</td>
+        </tr>
+      `).join('');
+    }
+
+    const alertsBody = document.getElementById('alertsBody');
+    if (!data.alerts.length) {
+      alertsBody.innerHTML = '<tr><td colspan="4" class="empty">لا يوجد تنبيهات بعد</td></tr>';
+    } else {
+      alertsBody.innerHTML = data.alerts.map(a => `
+        <tr>
+          <td>${escapeHtml(a.playerName)}</td>
+          <td class="ltr">${escapeHtml(a.processName)} (PID ${a.pid})</td>
+          <td class="score ${scoreClass(a.score)}">${a.score}/100</td>
+          <td>${timeAgo(a.timestampUtc)}</td>
+        </tr>
+      `).join('');
+    }
+  } catch (e) {
+    console.error('dashboard refresh failed', e);
+  }
+}
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
-async function refreshDashboard() {
-  try {
-    const res = await fetch('/api/dashboard', { headers: authHeaders() });
-    if (res.status === 401) { logout(); return; }
-    const data = await res.json();
-
-    document.getElementById('statTeams').textContent = data.teamsCount || 0;
-    document.getElementById('statOnline').textContent = data.devices.filter(d => d.isOnline).length;
-    document.getElementById('statAlert').textContent = data.devices.filter(d => (d.highestScore||0) >= 40).length;
-    document.getElementById('statAlertsTotal').textContent = data.alerts.length;
-
-    const devicesBody = document.getElementById('devicesBody');
-    devicesBody.innerHTML = data.devices.length ? data.devices.map(d => `
-      <tr class="${(d.highestScore||0) >= 40 ? 'alert-row' : ''}">
-        <td>${escapeHtml(d.teamName)}</td>
-        <td>${escapeHtml(d.deviceLabel)}</td>
-        <td class="ltr">${escapeHtml(d.machineName || '')}</td>
-        <td>${d.isOnline
-              ? `<span class="badge ${(d.highestScore||0)>=40?'alert':'ok'}">${(d.highestScore||0)>=40?'اشتباه':'طبيعي'}</span>`
-              : `<span class="badge offline">غير متصل</span>`}</td>
-        <td class="score ${scoreClass(d.highestScore||0)}">${d.highestScore||0}/100</td>
-        <td>${timeAgo(d.lastSeenUtc)}</td>
-      </tr>`).join('') : '<tr><td colspan="6" class="empty">لا يوجد أجهزة متصلة بعد</td></tr>';
-
-    const alertsBody = document.getElementById('alertsBody');
-    alertsBody.innerHTML = data.alerts.length ? data.alerts.map(a => `
-      <tr>
-        <td>${escapeHtml(a.teamName)}</td>
-        <td>${escapeHtml(a.deviceLabel)}</td>
-        <td class="ltr">${escapeHtml(a.processName)} (PID ${a.pid})</td>
-        <td class="score ${scoreClass(a.score)}">${a.score}/100</td>
-        <td class="reasons">${(a.reasons||[]).map(r => '• ' + escapeHtml(r)).join('<br>')}</td>
-        <td>${timeAgo(a.timestampUtc)}</td>
-      </tr>`).join('') : '<tr><td colspan="6" class="empty">لا يوجد تنبيهات بعد</td></tr>';
-  } catch (e) { console.error('dashboard refresh failed', e); }
-}
-
-async function refreshTeams() {
-  try {
-    const res = await fetch('/api/admin/teams', { headers: authHeaders() });
-    if (res.status === 401) { logout(); return; }
-    const data = await res.json();
-    const body = document.getElementById('teamsBody');
-    body.innerHTML = data.teams.length ? data.teams.map(t => `
-      <tr>
-        <td>${escapeHtml(t.teamName)}</td>
-        <td class="token-cell">${escapeHtml(t.token)}</td>
-        <td>${new Date(t.createdAtUtc).toLocaleString('ar')}</td>
-        <td><button class="danger" onclick="deleteTeam('${t.token}')">حذف</button></td>
-      </tr>`).join('') : '<tr><td colspan="4" class="empty">لا يوجد فرق بعد</td></tr>';
-  } catch (e) { console.error('teams refresh failed', e); }
-}
-
-async function createTeam() {
-  const nameEl = document.getElementById('newTeamName');
-  const teamName = nameEl.value.trim();
-  const resultEl = document.getElementById('newTeamResult');
-  if (!teamName) return;
-  try {
-    const res = await fetch('/api/admin/teams', { method: 'POST', headers: authHeaders(), body: JSON.stringify({ teamName }) });
-    const data = await res.json();
-    if (!res.ok) { resultEl.innerHTML = `<div class="error">${escapeHtml(data.error||'فشل الإنشاء')}</div>`; return; }
-    resultEl.innerHTML = `<div class="new-team-result">
-      تم إنشاء الفريق <b>${escapeHtml(data.teamName)}</b><br>
-      الرمز: <span class="token-cell">${escapeHtml(data.token)}</span><br>
-      <span class="copy-hint">أعطِ هذا الرمز لأعضاء الفريق ليكتبوه بخانة "رمز الفريق" داخل الأداة.</span>
-    </div>`;
-    nameEl.value = '';
-    refreshTeams();
-  } catch (e) { resultEl.innerHTML = `<div class="error">تعذّر الاتصال بالسيرفر</div>`; }
-}
-
-async function deleteTeam(token) {
-  if (!confirm('حذف هذا الفريق؟ الرمز يتوقف عن العمل فورًا.')) return;
-  await fetch('/api/admin/teams/' + encodeURIComponent(token), { method: 'DELETE', headers: authHeaders() });
-  refreshTeams();
-}
-
-// عند فتح الصفحة: لو فيه جلسة محفوظة، جرّبها مباشرة
-if (sessionToken) enterApp(); 
+refresh();
+setInterval(refresh, 3000);
 </script>
 </body>
 </html>
