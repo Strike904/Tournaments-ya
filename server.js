@@ -47,7 +47,7 @@ function requireAdmin(req, res, next) {
 // ===== تسجيل دخول المنظّم =====
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body || {};
-  if (password !== ADMIN_PASSWORD) {
+  if (password !== YaComp2026) {
     return res.status(401).json({ error: "كلمة المرور غير صحيحة" });
   }
   const sessionToken = randomToken(24);
