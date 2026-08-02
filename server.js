@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
 
 // ===== إعداد المنظّم: غيّر كلمة المرور هذي قبل النشر الفعلي! =====
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "change-me-now";
+const ADMIN_PASSWORD = process.env.YaComp2026 || "change-me-now";
 const SESSION_TTL_MS = 12 * 60 * 60 * 1000; // 12 ساعة
 const OFFLINE_AFTER_MS = 60 * 1000; // يُعتبر الفريق "غير متصل" لو ما أرسل شي آخر 60 ثانية
 
